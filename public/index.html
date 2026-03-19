@@ -28,7 +28,7 @@
   </head>
 
   <body>
-    <h1>Calculator Application</h1>
+    <h1>Anand Calculator</h1>
 
     <div class="calculator">
       <input type="number" id="num1" placeholder="Enter first number" />
@@ -53,7 +53,7 @@
         const num2 = parseFloat(document.getElementById("num2").value);
         const operation = document.getElementById("operation").value;
 
-        fetch("http://localhost:5000/calculate", {
+        fetch("http://localhost:3000/calculate", {
           method: "POST",
 
           headers: {
