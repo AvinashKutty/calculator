@@ -42,7 +42,12 @@
         <option value="divide">Divide</option>
       </select>
 
-      <button onclick="calculate()">Calculate</button>
+      <button
+        onclick="calculate()"
+        style="background-color: blueviolet; color: white"
+      >
+        Calculate
+      </button>
 
       <h2 id="result"></h2>
     </div>
@@ -51,6 +56,7 @@
       function calculate() {
         const num1 = parseFloat(document.getElementById("num1").value);
         const num2 = parseFloat(document.getElementById("num2").value);
+
         const operation = document.getElementById("operation").value;
 
         fetch("http://localhost:3000/calculate", {
