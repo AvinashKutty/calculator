@@ -30,6 +30,12 @@ app.post("/calculate", (req, res) => {
     case "divide":
       result = num2 !== 0 ? num1 / num2 : "Cannot divide by zero";
       break;
+    case "power":
+      result = Math.pow(num1, num2);
+      break;
+    case "modulus":
+      result = num2 !== 0 ? num1 % num2 : "Cannot divide by zero";
+      break;
     default:
       result = "Invalid operation";
   }

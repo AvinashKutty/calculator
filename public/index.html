@@ -1,86 +1,182 @@
 <!doctype html>
 <html>
   <head>
-    <title>Calculator App</title>
-
+    <title>Nathina Calculator Pro</title>
     <style>
       body {
-        font-family: Arial;
+        font-family: Arial, sans-serif;
         text-align: center;
-        margin-top: 50px;
+        margin: 50px 20px;
+        background: #f7f7f7;
+      }
+
+      h1 {
+        color: #4b0082;
       }
 
       .calculator {
-        border: 1px solid gray;
-        padding: 20px;
-        width: 300px;
+        border: 2px solid #4b0082;
+        border-radius: 10px;
+        padding: 30px;
+        width: 350px;
+        max-width: 90%;
         margin: auto;
+        background: white;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
       }
 
-      input,
-      select,
+      input, select, button {
+        margin: 10px 0;
+        padding: 12px;
+        width: 90%;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
       button {
-        margin: 10px;
+        cursor: pointer;
+        background-color: #4b0082;
+        color: white;
+        border: none;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        background-color: #6a0dad;
+      }
+
+      #result {
+        margin-top: 15px;
+        font-weight: bold;
+        font-size: 20px;
+        color: #4b0082;
+      }
+
+      .history {
+        margin-top: 20px;
+        text-align: left;
+        max-height: 150px;
+        overflow-y: auto;
         padding: 10px;
-        width: 80%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background: #f3f3f3;
+      }
+
+      .history h3 {
+        margin-top: 0;
+        font-size: 16px;
+        color: #333;
+      }
+
+      .history p {
+        margin: 5px 0;
+        font-size: 14px;
       }
     </style>
   </head>
 
   <body>
-    <h1>Nathina Calculator</h1>
+    <h1>Nathina Calculator Pro</h1>
 
     <div class="calculator">
       <input type="number" id="num1" placeholder="Enter first number" />
-
       <input type="number" id="num2" placeholder="Enter second number" />
 
       <select id="operation">
-        <option value="add">Add</option>
-        <option value="subtract">Subtract</option>
-        <option value="multiply">Multiply</option>
-        <option value="divide">Divide</option>
+        <option value="add">Add (+)</option>
+        <option value="subtract">Subtract (-)</option>
+        <option value="multiply">Multiply (×)</option>
+        <option value="divide">Divide (÷)</option>
+        <option value="power">Power (^)</option>
+        <option value="modulus">Modulus (%)</option>
       </select>
 
-      <button
-        onclick="calculate()"
-        style="background-color: blueviolet; color: white"
-      >
-        Calculate
-      </button>
+      <div>
+        <button onclick="calculate()">Calculate</button>
+        <button onclick="clearAll()" style="background-color: gray;">Clear</button>
+      </div>
 
       <h2 id="result"></h2>
+
+      <div class="history" id="history">
+        <h3>Calculation History:</h3>
+      </div>
     </div>
 
     <script>
+      const historyDiv = document.getElementById("history");
+
       function calculate() {
         const num1 = parseFloat(document.getElementById("num1").value);
         const num2 = parseFloat(document.getElementById("num2").value);
-
         const operation = document.getElementById("operation").value;
 
-        fetch("http://localhost:3000/calculate", {
-          method: "POST",
+        if (isNaN(num1) || isNaN(num2)) {
+          alert("Please enter valid numbers!");
+          return;
+        }
 
-          headers: {
-            "Content-Type": "application/json",
-          },
+        let result;
 
-          body: JSON.stringify({
-            num1: num1,
-            num2: num2,
-            operation: operation,
-          }),
-        })
-          .then((response) => response.json())
+        switch (operation) {
+          case "add":
+            result = num1 + num2;
+            break;
+          case "subtract":
+            result = num1 - num2;
+            break;
+          case "multiply":
+            result = num1 * num2;
+            break;
+          case "divide":
+            result = num2 !== 0 ? num1 / num2 : "Cannot divide by zero";
+            break;
+          case "power":
+            result = Math.pow(num1, num2);
+            break;
+          case "modulus":
+            result = num2 !== 0 ? num1 % num2 : "Cannot divide by zero";
+            break;
+          default:
+            result = "Invalid operation";
+        }
 
-          .then((data) => {
-            document.getElementById("result").innerText =
-              "Result: " + data.result;
-          })
+        document.getElementById("result").innerText = "Result: " + result;
 
-          .catch((error) => console.log(error));
+        // Add to history
+        const p = document.createElement("p");
+        p.textContent = `${num1} ${getSymbol(operation)} ${num2} = ${result}`;
+        historyDiv.appendChild(p);
+
+        // Auto-scroll to bottom
+        historyDiv.scrollTop = historyDiv.scrollHeight;
       }
+
+      function clearAll() {
+        document.getElementById("num1").value = "";
+        document.getElementById("num2").value = "";
+        document.getElementById("result").innerText = "";
+      }
+
+      function getSymbol(op) {
+        switch (op) {
+          case "add": return "+";
+          case "subtract": return "-";
+          case "multiply": return "×";
+          case "divide": return "÷";
+          case "power": return "^";
+          case "modulus": return "%";
+        }
+      }
+
+      // Keyboard Enter key support
+      document.addEventListener("keydown", function(e) {
+        if (e.key === "Enter") {
+          calculate();
+        }
+      });
     </script>
   </body>
 </html>
