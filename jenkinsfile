@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKERHUB_CREDENTIALS = 'dockerhub-creds' 
+        DOCKERHUB_USERNAME = 'avinashanand28'
+        IMAGE_NAME = 'newapp'
+        IMAGE_TAG = 'latest'
+        DEPLOY_HOST = '54.87.197.26'       // Replace with your EC2 public IP
+        DEPLOY_USER = 'ubuntu'
+        DEPLOY_SSH_KEY = '/home/ubuntu/.ssh/id_rsa' 
+    }
+
+    stages {
+
+        stage('Clone Code') {
+            steps {
+                git 'https://github.com/avinashanand28/calculator.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build -t ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG} ."
+            }
+        }
+
+        stage('Login Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CREDENTIALS}", 
+                                  usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                sh "docker push ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}"
+            }
+        }
+
+        stage('Deploy to EC2') {
+            steps {
+                sh """
+                ssh -i ${DEPLOY_SSH_KEY} ${DEPLOY_USER}@${DEPLOY_HOST} '
+                    docker pull ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG} &&
+                    docker stop node-app || true &&
+                    docker rm node-app || true &&
+                    docker run -d --name node-app -p 3000:3000 ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
+                '
+                """
+            }
+        }
+    }
+}
