@@ -6,7 +6,7 @@ pipeline {
         DOCKERHUB_USERNAME = 'avinashanand28'
         IMAGE_NAME = 'newapp'
         IMAGE_TAG = 'latest'
-        DEPLOY_HOST = '54.87.197.26'       // Replace with your EC2 public IP
+        DEPLOY_HOST = '54.87.197.26'      
         DEPLOY_USER = 'ubuntu'
         DEPLOY_SSH_KEY = '/home/ubuntu/.ssh/id_rsa' 
     }
@@ -15,7 +15,7 @@ pipeline {
 
         stage('Clone Code') {
             steps {
-                git 'https://github.com/avinashanand28/calculator.git'
+                git branch: 'main', url: 'https://github.com/avinashanand28/calculator.git'
             }
         }
 
@@ -43,10 +43,9 @@ pipeline {
         stage('Deploy to EC2') {
             steps {
                 sh """
-                ssh -i ${DEPLOY_SSH_KEY} ${DEPLOY_USER}@${DEPLOY_HOST} '
+                ssh -o StrictHostKeyChecking=no -i ${DEPLOY_SSH_KEY} ${DEPLOY_USER}@${DEPLOY_HOST} '
                     docker pull ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG} &&
-                    docker stop node-app || true &&
-                    docker rm node-app || true &&
+                    docker ps -q --filter "name=node-app" | grep -q . && docker stop node-app && docker rm node-app || true &&
                     docker run -d --name node-app -p 3000:3000 ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
                 '
                 """
