@@ -80,21 +80,21 @@ CMD ["catalina.sh", "run"]
 ```
 🧠 FULL ENTERPRISE FOLDER STRUCTURE
 k8s/
- ├── namespace.yaml
- ├── deployment.yaml
- ├── service.yaml
- ├── ingress.yaml
- ├── configmap.yaml
- ├── secret.yaml
- ├── hpa.yaml
- ├── pdb.yaml
- ├── pvc.yaml
- ├── serviceaccount.yaml
- ├── role.yaml
- ├── rolebinding.yaml
- ├── networkpolicy.yaml
- ├── job.yaml
- ├── cronjob.yaml
+   namespace.yaml
+   deployment.yaml
+   service.yaml
+   ingress.yaml
+   configmap.yaml
+   secret.yaml
+   hpa.yaml
+   pdb.yaml
+   pvc.yaml
+   serviceaccount.yaml
+   role.yaml
+   rolebinding.yaml
+   networkpolicy.yaml
+   job.yaml
+   cronjob.yaml
 🎯 MINIMUM vs FULL ENTERPRISE
 ✅ Minimum (what YOU start with)
 Deployment
