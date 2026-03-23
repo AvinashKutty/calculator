@@ -614,3 +614,120 @@ You now have:
 Now comes:
 
 👉 Secret.yaml (same concept, but for passwords + TLS)
+
+🧠 First: What is Secret?
+
+👉 Same as ConfigMap… BUT for sensitive data
+
+❌ ConfigMap stores
+API_URL ✅
+ENV ✅
+LOG_LEVEL ✅
+✅ Secret stores
+DB_PASSWORD 🔐
+API_KEY 🔐
+TOKEN 🔐
+TLS CERT 🔐
+🎯 Simple meaning
+
+Secret = secure key-value storage for sensitive data
+
+🏢 ✅ ENTERPRISE Secret.yaml
+
+```bash
+apiVersion: v1
+kind: Secret
+
+metadata:
+  name: myapp-secret
+  namespace: production
+  labels:
+    app: myapp
+
+type: Opaque
+
+data:
+  DB_USERNAME: YWRtaW4=
+  DB_PASSWORD: cGFzc3dvcmQxMjM=
+```
+🧠 What is this strange value? 😅
+DB_PASSWORD: cGFzc3dvcmQxMjM=
+
+👉 This is base64 encoded
+
+🔥 Example
+echo -n "password123" | base64
+
+👉 Output:
+
+cGFzc3dvcmQxMjM=
+⚠️ Important
+
+👉 Base64 is NOT encryption ❌
+👉 Just encoding
+
+🧩 Step 2: Use Secret in Deployment
+🔹 Method 1 (recommended)
+envFrom:
+- secretRef:
+    name: myapp-secret
+🔹 Method 2 (specific key)
+env:
+- name: DB_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: myapp-secret
+      key: DB_PASSWORD
+🎯 What happens inside container
+printenv
+
+👉 Output:
+
+DB_USERNAME=admin
+DB_PASSWORD=password123
+🔥 Full flow (same as ConfigMap)
+Secret.yaml
+     ↓
+Deployment.yaml
+     ↓
+Pod (env variables)
+     ↓
+Application uses it
+🧠 Real example (your backend)
+Backend needs:
+DB_USERNAME
+DB_PASSWORD
+Secret stores it
+
+👉 Deployment injects it
+👉 Backend connects DB
+
+🔥 ConfigMap vs Secret (clear difference)
+Feature	ConfigMap	Secret
+Data type	Normal	Sensitive
+Encoding	Plain	Base64
+Use case	URL, ENV	Password, Token
+⚠️ Important rules
+❌ Don’t put secrets in ConfigMap
+DB_PASSWORD ❌
+❌ Don’t hardcode in code
+const password = "123456"; ❌
+✅ Always use Secret
+💥 One-line memory
+
+Secret = secure config injected into container
+
+🚀 Final clarity
+
+👉 Same flow as ConfigMap
+👉 Only difference = sensitive data
+
+🔥 Now your Kubernetes core is almost complete
+
+You now know:
+
+✔ Deployment
+✔ Service
+✔ Ingress
+✔ ConfigMap
+✔ Secret
