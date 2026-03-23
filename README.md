@@ -515,3 +515,102 @@ Service
      ↓
 Pods
 ```
+🏢 ✅ FINAL ENTERPRISE ConfigMap.yaml
+
+```bash
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: myapp-config
+  namespace: production
+  labels:
+    app: myapp
+    environment: production
+
+data:
+  # 🔹 Frontend config
+  API_URL: "https://api.company.com"
+
+  # 🔹 Backend config
+  DB_HOST: "mysql-service"
+  DB_PORT: "3306"
+
+  # 🔹 App environment
+  ENV: "production"
+  LOG_LEVEL: "INFO"
+
+  # 🔹 Feature flags (real enterprise use)
+  ENABLE_CACHE: "true"
+  ENABLE_METRICS: "true"
+```
+🧠 Now understand ONLY what matters
+🎯 What this file is
+
+👉 Just a storage of key-value pairs
+
+KEY → VALUE
+🔥 Example from above
+API_URL → https://api.company.com
+DB_HOST → mysql-service
+🧩 How it is USED (MOST IMPORTANT)
+
+👉 Inside Deployment.yaml:
+
+envFrom:
+- configMapRef:
+    name: myapp-config
+🎯 What happens after this
+
+Inside your container:
+
+API_URL=https://api.company.com
+DB_HOST=mysql-service
+ENV=production
+
+👉 Your app reads this
+
+🧠 Real flow (final clarity)
+ConfigMap.yaml
+      ↓
+Deployment.yaml
+      ↓
+Container ENV variables
+      ↓
+Application uses it
+💥 Why this is “enterprise”
+
+✔ Namespace used
+✔ Labels added
+✔ Separate frontend/backend config
+✔ Feature flags included
+✔ Clean structure
+
+⚠️ VERY IMPORTANT RULE
+
+❌ Don’t put this here:
+
+passwords
+tokens
+API keys
+
+👉 That goes in Secret.yaml
+
+🧠 One-line memory
+
+ConfigMap = external config injected into container as environment variables
+
+🚀 You’re now aligned with production level
+
+You now have:
+
+✔ Deployment
+✔ Service
+✔ Ingress
+✔ ConfigMap
+
+🔥 Next step (VERY IMPORTANT)
+
+Now comes:
+
+👉 Secret.yaml (same concept, but for passwords + TLS)
