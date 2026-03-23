@@ -80,6 +80,8 @@ CMD ["catalina.sh", "run"]
 ```
 🧠 FULL ENTERPRISE FOLDER STRUCTURE
 k8s/
+
+```bash
    namespace.yaml
    deployment.yaml
    service.yaml
@@ -95,6 +97,7 @@ k8s/
    networkpolicy.yaml
    job.yaml
    cronjob.yaml
+```
 🎯 MINIMUM vs FULL ENTERPRISE
 ✅ Minimum (what YOU start with)
 Deployment
