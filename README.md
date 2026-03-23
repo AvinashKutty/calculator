@@ -731,3 +731,128 @@ You now know:
 ✔ Ingress
 ✔ ConfigMap
 ✔ Secret
+
+I’ll explain PVC.yaml clearly without confusion.
+
+🧠 First: Why do we need PVC?
+
+👉 Problem:
+
+Pod deleted → data lost ❌
+
+👉 Example:
+
+Database pod restarts → all data gone 😨
+✅ Solution
+
+👉 Use Persistent Storage
+
+🧩 3 components (IMPORTANT)
+PV  → actual storage (disk)
+PVC → request for storage
+Pod → uses storage
+🎯 Simple meaning
+
+PVC = “I need 10GB storage” request to Kubernetes
+
+🏢 ✅ ENTERPRISE PVC.yaml
+```bash
+apiVersion: v1
+kind: PersistentVolumeClaim
+
+metadata:
+  name: mysql-pvc
+  namespace: production
+
+spec:
+  accessModes:
+    - ReadWriteOnce
+
+  resources:
+    requests:
+      storage: 10Gi
+
+  storageClassName: standard
+
+```
+🧠 Now understand clearly
+🟢 1️⃣ kind
+PersistentVolumeClaim
+
+👉 This is a storage request
+
+🟢 2️⃣ storage request
+storage: 10Gi
+
+👉 Asking for:
+
+10 GB storage
+🟢 3️⃣ accessModes
+ReadWriteOnce
+
+👉 Means:
+
+One pod can use it at a time
+🟢 4️⃣ storageClassName
+standard
+
+👉 Defines:
+
+Type of storage (EBS, SSD, etc.)
+🔥 What happens after applying PVC
+PVC created
+     ↓
+Kubernetes finds PV (or creates dynamically)
+     ↓
+PVC gets storage
+🚀 Step 2: Use PVC in Deployment
+Example (MySQL pod)
+volumeMounts:
+- mountPath: /var/lib/mysql
+  name: mysql-storage
+
+volumes:
+- name: mysql-storage
+  persistentVolumeClaim:
+    claimName: mysql-pvc
+🎯 What happens now
+Pod writes data → /var/lib/mysql
+        ↓
+Stored in persistent disk
+        ↓
+Pod deleted → data still exists ✅
+🧠 Full flow
+PVC → gets storage
+      ↓
+Pod mounts it
+      ↓
+Data persists
+💥 Real-world example
+
+👉 Backend DB:
+
+MySQL pod
+   ↓
+Uses PVC
+   ↓
+Data safe even after restart
+⚠️ Important concepts
+❌ Without PVC
+Pod restart → data lost ❌
+✅ With PVC
+Pod restart → data safe ✅
+🧠 One-line memory
+
+PVC = request storage and attach it to pod
+
+🚀 Final clarity
+
+You now know:
+
+✔ Deployment → runs app
+✔ Service → connects
+✔ Ingress → exposes
+✔ ConfigMap → config
+✔ Secret → secure data
+✔ HPA → scaling
+✔ PVC → storage
