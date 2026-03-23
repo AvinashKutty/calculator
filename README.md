@@ -389,3 +389,126 @@ Secure
 
 👉 External access handled by:
 👉 Ingress
+
+🏢 ✅ FINAL ENTERPRISE INGRESS.yaml
+```bash
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: main-ingress
+  namespace: production
+  labels:
+    app: main-ingress
+
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+
+spec:
+  ingressClassName: nginx
+
+  tls:
+  - hosts:
+      - app.company.com
+      - api.company.com
+    secretName: company-tls
+
+  rules:
+
+  # 🔹 Frontend
+  - host: app.company.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 80
+
+  # 🔹 Backend
+  - host: api.company.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 80
+```
+🧠 Now understand this simply (no overload)
+🎯 What this file does
+
+👉 It says:
+
+app.company.com  → frontend-service
+api.company.com  → backend-service
+🔥 How traffic flows
+User → app.company.com
+      ↓
+Ingress Controller (NGINX)
+      ↓
+frontend-service
+      ↓
+frontend pods
+Frontend → calls API (api.company.com)
+      ↓
+Ingress
+      ↓
+backend-service
+      ↓
+backend pods
+🟢 Important parts only
+✅ ingressClassName
+ingressClassName: nginx
+
+👉 Use NGINX controller
+
+✅ TLS (HTTPS)
+tls:
+  secretName: company-tls
+
+👉 Enables:
+
+https://app.company.com
+✅ rules
+
+👉 This is the brain:
+
+host → service
+✅ annotations
+
+👉 Controls behavior:
+
+HTTPS redirect
+request size
+URL rewrite
+💥 Why this is “enterprise”
+
+✔ Uses domain-based routing
+✔ Supports HTTPS
+✔ Handles multiple apps
+✔ Clean separation (frontend/backend)
+✔ Works with LoadBalancer + Ingress Controller
+
+🧠 Final full architecture
+```bash
+User (Browser)
+     ↓
+DNS
+     ↓
+LoadBalancer
+     ↓
+Ingress Controller
+     ↓
+Ingress rules
+     ↓
+Service
+     ↓
+Pods
+```
