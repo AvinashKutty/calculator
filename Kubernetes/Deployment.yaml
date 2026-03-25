@@ -1,0 +1,32 @@
+apiversion: apps/v1
+Kind: Deployment
+metadata:
+  name: myapp-deployment
+  label:
+    app: myapp
+spec:
+  replicas: 2
+
+  selector:
+    matchlabels:
+      app: myapp
+
+  template:
+    metadata:
+      label:
+        app: myapp
+
+  spec:
+    container:
+      - name: myapp-container
+        image: mydockerhub/myapp:v1
+        ports:
+          - containerport: 3000
+    resources:
+      request:
+        memory: "128mi"
+        cpu: "250m"
+
+      limit:
+        memory: "250mi"
+        cpu: "500m"
